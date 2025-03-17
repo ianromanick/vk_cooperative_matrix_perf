@@ -267,7 +267,21 @@ void createMatrixDesc(VkDevice device, VkPhysicalDeviceMemoryProperties &memoryP
     vkGetBufferMemoryRequirements(device, m.hostBuffer, &memReqs);
 
     int32_t hostIndex = findProperties(&memoryProperties, memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT);
+
+    if (hostIndex == -1)
+	    hostIndex = findProperties(&memoryProperties, memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+    if (hostIndex == -1) {
+	    printf("No matching host memory type.\n");
+	    throw;
+    }
+
     int32_t deviceIndex = findProperties(&memoryProperties, memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+    if (deviceIndex == -1) {
+	    printf("No matching device memory type.\n");
+	    throw;
+    }
 
     VkMemoryAllocateInfo memAllocateInfo = {
         VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
@@ -764,6 +778,14 @@ int main(int argc, char *argv[])
             vkGetBufferMemoryRequirements(device, paramBuffer, &memReqs);
 
             int32_t hostIndex = findProperties(&memoryProperties, memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT);
+
+	    if (hostIndex == -1)
+		    hostIndex = findProperties(&memoryProperties, memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+	    if (hostIndex == -1) {
+		    printf("No matching host memory type.\n");
+		    throw;
+	    }
 
             VkMemoryAllocateInfo memAllocateInfo = {
                 VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
